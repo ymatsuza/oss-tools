@@ -7,7 +7,7 @@ Each tool lives in its own repository — install only what you need.
 
 | Tool | Description | Install |
 |------|-------------|---------|
-| *(first tool coming soon)* | | |
+| [rcmd](https://github.com/ymatsuza/rcmd) | Personal command knowledge base: import shell history, annotate/tag, search, and recall (print or run) with `{{placeholder}}` substitution. Local-only single TOML, cross-platform. | `uv tool install "git+https://github.com/ymatsuza/rcmd.git"` |
 
 ## Installation
 
