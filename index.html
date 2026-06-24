@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>oss-tools — small, focused CLI tools for everyday dev work</title>
+<meta name="description" content="A collection of small, focused, cross-platform CLI tools (Windows/macOS/Linux). Pure-core + thin CLI, dependency-light, MIT. Install with uv." />
+<style>
+  :root{
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2128; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --faint:#6e7681;
+    --green:#3fb950; --blue:#58a6ff; --cyan:#39c5cf; --amber:#d29922;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --radius:10px; --maxw:980px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;font-size:16px}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  code,kbd,.mono{font-family:var(--mono)}
+  .accent-green{color:var(--green)}
+  .accent-cyan{color:var(--cyan)}
+
+  header.site{border-bottom:1px solid var(--border);position:sticky;top:0;
+    background:rgba(13,17,23,.85);backdrop-filter:blur(8px);z-index:10}
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+  .brand{font-family:var(--mono);font-weight:600;font-size:18px;letter-spacing:-.3px}
+  .brand .p{color:var(--green)}
+  .nav a{color:var(--muted);margin-left:20px;font-size:14px}
+  .nav a:hover{color:var(--text);text-decoration:none}
+
+  .hero{padding:84px 0 56px;text-align:center}
+  .hero .eyebrow{font-family:var(--mono);color:var(--green);font-size:14px;margin:0 0 18px}
+  .hero h1{font-size:46px;line-height:1.12;margin:0 0 18px;font-weight:700;letter-spacing:-1px}
+  .hero h1 .hl{color:var(--cyan)}
+  .hero p.lead{font-size:19px;color:var(--muted);max-width:660px;margin:0 auto 28px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 30px}
+  .badge{font-family:var(--mono);font-size:12.5px;color:var(--muted);
+    border:1px solid var(--border);border-radius:999px;padding:5px 13px;background:var(--surface)}
+  .badge b{color:var(--text);font-weight:600}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;font-size:15px;font-weight:600;padding:11px 20px;border-radius:8px;
+    border:1px solid var(--border);background:var(--surface);color:var(--text);transition:.12s}
+  .btn:hover{border-color:var(--faint);text-decoration:none;transform:translateY(-1px)}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#06210e}
+  .btn.primary:hover{background:#46c95a}
+
+  .term{max-width:720px;margin:46px auto 0;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+  .term .bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--border);
+    background:var(--surface2)}
+  .term .dot{width:11px;height:11px;border-radius:50%}
+  .term .bar .t{margin-left:10px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .term pre{margin:0;padding:18px 18px 22px;font-family:var(--mono);font-size:13.5px;line-height:1.75;
+    overflow-x:auto;color:var(--text)}
+  .term .pr{color:var(--green)}
+  .term .cm{color:var(--text)}
+  .term .ot{color:var(--muted)}
+  .term .c{color:var(--faint)}
+
+  section{padding:64px 0}
+  .sec-h{text-align:center;margin:0 0 42px}
+  .sec-h h2{font-size:30px;margin:0 0 10px;font-weight:700;letter-spacing:-.5px}
+  .sec-h p{color:var(--muted);margin:0;font-size:17px}
+
+  .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:26px;display:flex;flex-direction:column}
+  .card h3{font-family:var(--mono);font-size:22px;margin:0 0 4px;font-weight:600}
+  .card h3 .p{color:var(--green)}
+  .card .tag{color:var(--muted);font-size:15px;margin:0 0 18px}
+  .card ul{list-style:none;padding:0;margin:0 0 20px}
+  .card li{position:relative;padding-left:22px;margin:0 0 9px;font-size:14.5px;color:var(--text)}
+  .card li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px;
+    background:var(--cyan)}
+  .card li b{color:var(--text);font-weight:600}
+  .install{display:flex;align-items:stretch;margin:auto 0 14px;border:1px solid var(--border);
+    border-radius:8px;overflow:hidden;background:var(--bg)}
+  .install code{flex:1;padding:11px 13px;font-size:12.5px;color:var(--text);overflow-x:auto;white-space:nowrap}
+  .install button{border:0;border-left:1px solid var(--border);background:var(--surface2);color:var(--muted);
+    font-family:var(--mono);font-size:12px;padding:0 14px;cursor:pointer;transition:.12s}
+  .install button:hover{color:var(--text);background:#222831}
+  .card .links{display:flex;gap:16px;font-size:14px;font-family:var(--mono)}
+
+  .approach{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+  .feat .f h4{font-family:var(--mono);font-size:16px;margin:0 0 6px;color:var(--cyan);font-weight:600}
+  .feat .f p{margin:0;color:var(--muted);font-size:14.5px}
+
+  footer.site{padding:40px 0;text-align:center;color:var(--faint);font-size:14px}
+  footer.site .mono{color:var(--muted)}
+  footer.site a{color:var(--muted)}
+
+  @media(max-width:640px){
+    .hero{padding:54px 0 40px}
+    .hero h1{font-size:33px}
+    .hero p.lead{font-size:17px}
+    section{padding:48px 0}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand"><span class="p">$</span> oss-tools</div>
+    <nav class="nav">
+      <a href="#tools">Tools</a>
+      <a href="#approach">Approach</a>
+      <a href="https://github.com/ymatsuza">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">// small, sharp, cross-platform</p>
+      <h1>CLI tools that do <span class="hl">one thing</span><br />and get out of your way</h1>
+      <p class="lead">A growing collection of focused command-line tools for everyday developer
+        workflows — built the same way: a pure-function core, a thin CLI, and almost no dependencies.
+        Run them the same on Windows, macOS, and Linux.</p>
+      <div class="badges">
+        <span class="badge"><b>Cross-platform</b> · Win / mac / Linux</span>
+        <span class="badge"><b>Python</b> 3.11</span>
+        <span class="badge"><b>uv</b> + Typer</span>
+        <span class="badge"><b>MIT</b> licensed</span>
+        <span class="badge">dependency-light</span>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="#tools">Browse the tools</a>
+        <a class="btn" href="https://github.com/ymatsuza">View on GitHub</a>
+      </div>
+
+      <div class="term" aria-label="Example terminal session">
+        <div class="bar">
+          <span class="dot" style="background:#ff5f56"></span>
+          <span class="dot" style="background:#ffbd2e"></span>
+          <span class="dot" style="background:#27c93f"></span>
+          <span class="t">zsh — oss-tools</span>
+        </div>
+<pre><span class="pr">$</span> <span class="cm">rcmd save "docker compose up -d" -d "start the stack" -t docker</span>
+<span class="ot">a1b2</span>
+<span class="pr">$</span> <span class="cm">rcmd search docker | fzf</span>   <span class="c"># pull a saved command back</span>
+
+<span class="pr">$</span> <span class="cm">rcopy ./project ./backup -e node_modules -e "*.log" --dry-run</span>
+<span class="ot">./project/src/app.py -&gt; ./backup/src/app.py</span>
+<span class="ot">./project/README.md  -&gt; ./backup/README.md</span>
+<span class="c"># gitignore-style excludes, identical on every OS</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="tools">
+    <div class="wrap">
+      <div class="sec-h">
+        <h2>The tools</h2>
+        <p>Each lives in its own repo — install only what you need.</p>
+      </div>
+      <div class="tools">
+
+        <article class="card">
+          <h3><span class="p">$</span> rcmd</h3>
+          <p class="tag">Your personal command knowledge base.</p>
+          <ul>
+            <li>Import raw shell <b>history</b> (bash / zsh / fish / PowerShell) as a bridge</li>
+            <li>Annotate &amp; <b>tag</b> the commands worth keeping, then <b>search</b> them</li>
+            <li>Recall with <code>{{placeholder}}</code> substitution — print or run</li>
+            <li>Local-only single <b>TOML</b> you can hand-edit and sync with your dotfiles</li>
+          </ul>
+          <div class="install">
+            <code id="i-rcmd">uv tool install "git+https://github.com/ymatsuza/rcmd.git"</code>
+            <button data-copy="i-rcmd">copy</button>
+          </div>
+          <div class="links">
+            <a href="https://github.com/ymatsuza/rcmd">GitHub →</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3><span class="p">$</span> rcopy</h3>
+          <p class="tag">Recursive copy with gitignore-style excludes.</p>
+          <ul>
+            <li><b>--exclude</b> / <b>--include</b> patterns that work the same on every OS</li>
+            <li><b>--dry-run</b> previews every copy before touching the disk</li>
+            <li>Fixes the gaps in <code>Copy-Item -Recurse -Exclude</code>, <code>robocopy</code>, <code>rsync</code></li>
+            <li>Pure Python, one dependency, no config files</li>
+          </ul>
+          <div class="install">
+            <code id="i-rcopy">uv tool install "git+https://github.com/ymatsuza/rcopy.git"</code>
+            <button data-copy="i-rcopy">copy</button>
+          </div>
+          <div class="links">
+            <a href="https://github.com/ymatsuza/rcopy">GitHub →</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="approach" class="approach">
+    <div class="wrap">
+      <div class="sec-h">
+        <h2>The approach</h2>
+        <p>Every tool in the collection is built to the same shape.</p>
+      </div>
+      <div class="feat">
+        <div class="f">
+          <h4>// focused</h4>
+          <p>One job, done well. No grab-bag flags, no config files, no surprises.</p>
+        </div>
+        <div class="f">
+          <h4>// cross-platform</h4>
+          <p>Windows is a first-class target, not an afterthought. Same behaviour everywhere.</p>
+        </div>
+        <div class="f">
+          <h4>// pure-core + thin CLI</h4>
+          <p>Logic lives in pure functions; the CLI is a thin wrapper. Easy to test, easy to read.</p>
+        </div>
+        <div class="f">
+          <h4>// dependency-light</h4>
+          <p>Typer plus the standard library. Nothing compiled, nothing heavy to install.</p>
+        </div>
+        <div class="f">
+          <h4>// local-only</h4>
+          <p>No network, no accounts, no telemetry. Your data stays on your machine.</p>
+        </div>
+        <div class="f">
+          <h4>// tested</h4>
+          <p>Built test-first with pytest. Each tool ships dozens of passing tests.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="mono">$ oss-tools</p>
+    <p>Small, focused CLI tools for everyday developer workflows.
+      MIT licensed · built with <a href="https://typer.tiangolo.com/">Typer</a>
+      &amp; <a href="https://docs.astral.sh/uv/">uv</a> ·
+      <a href="https://github.com/ymatsuza">github.com/ymatsuza</a></p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll(".install button[data-copy]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = document.getElementById(btn.getAttribute("data-copy"));
+      var text = el.textContent;
+      navigator.clipboard.writeText(text).then(function(){
+        var old = btn.textContent;
+        btn.textContent = "copied";
+        setTimeout(function(){ btn.textContent = old; }, 1400);
+      }).catch(function(){
+        var r = document.createRange(); r.selectNode(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      });
+    });
+  });
+</script>
+</body>
+</html>
