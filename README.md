@@ -8,6 +8,7 @@ Each tool lives in its own repository — install only what you need.
 | Tool | Description | Install |
 |------|-------------|---------|
 | [rcmd](https://github.com/ymatsuza/rcmd) | Personal command knowledge base: import shell history, annotate/tag, search, and recall (print or run) with `{{placeholder}}` substitution. Local-only single TOML, cross-platform. | `uv tool install "git+https://github.com/ymatsuza/rcmd.git"` |
+| [rcopy](https://github.com/ymatsuza/rcopy) | Cross-platform recursive copy with gitignore-style `--exclude`/`--include` and a `--dry-run` preview. Fills the gap left by Windows `Copy-Item -Recurse -Exclude`, `robocopy`, and `rsync --exclude`. | `uv tool install "git+https://github.com/ymatsuza/rcopy.git"` |
 
 ## Installation
 
